@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 20px;
+      background-color: #f4f4f4;
+    }
+
+    #cart {
+      max-width: 400px;
+      margin: 0 auto;
+      background-color: #fff;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+    }
+
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      border-bottom: 1px solid #ccc;
+    }
+
+    .heart-icon {
+      cursor: pointer;
+      margin-left: 10px;
+      color: grey;
+    }
+
+    .heart-icon.liked {
+      color: red;
+    }
+
+    .quantity button {
+      background-color: #4caf50;
+      color: #fff;
+      border: none;
+      padding: 5px 10px;
+      cursor: pointer;
+      border-radius: 4px;
+      margin: 0 5px;
+    }
+
+    .delete {
+      background-color: #f44336;
+      color: #fff;
+      border: none;
+      padding: 5px 10px;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    .total {
+      font-weight: bold;
+      margin-top: 10px;
+    }
+  </style>
+  <title>Shopping Cart</title>
+</head>
+<body>
+
+  <div id="cart"></div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const cartContainer = document.getElementById('cart');
+      let total = 0;
+
+      // Sample example
+      const items = [
+        { name: 'Item 1', price: 200.000 },
+        { name: 'Item 2', price: 85.99 }
+      ];
+      items.forEach(item => addItemToCart(item));
+
+      function addItemToCart(item) {
+        const cartItem = document.createElement('div');
+        cartItem.classList.add('cart-item');
+        cartItem.setAttribute('data-price', item.price);
+
+        cartItem.innerHTML = `
+          <div>
+            <span>${item.name}</span>
+            <div class="heart-icon">&#10084;</div>
+          </div>
+          <div class="quantity">
+            <button class="decrement">-</button>
+            <span class="quantity-value">1</span>
+            <button class="increment">+</button>
+          </div>
+          <button class="delete">Delete</button>
+        `;
+
+        cartContainer.appendChild(cartItem);
+        updateTotal();
+      }
+
+      // hadheya el event listener lelcart
+      cartContainer.addEventListener('click', function (event) {
+        const target = event.target;
+        const cartItem = target.closest('.cart-item');
+        if (target.classList.contains('decrement') || target.classList.contains('increment')) {
+          const quantityElement = cartItem.querySelector('.quantity-value');
+          const currentQuantity = parseInt(quantityElement.textContent);
+          const newQuantity = target.classList.contains('decrement') ? Math.max(1, currentQuantity - 1) : currentQuantity + 1;
+          quantityElement.textContent = newQuantity;
+          updateTotal();
+        }
+
+        // Delete item
+        if (target.classList.contains('delete')) {
+          cartItem.remove();
+          updateTotal();
+        }
+
+        // Like item
+        if (target.classList.contains('heart-icon')) {
+          target.classList.toggle('liked');
+        }
+      });
+      function updateTotal() {
+        const items = cartContainer.querySelectorAll('.cart-item');
+        total = Array.from(items).reduce((acc, item) => {
+          const quantity = parseInt(item.querySelector('.quantity-value').textContent);
+          const price = parseFloat(item.getAttribute('data-price'));
+          return acc + quantity * price;
+        }, 0);
+
+        console.log(total);
+      }
+    });
+  </script>
+</body>
+</html>
